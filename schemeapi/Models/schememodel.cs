@@ -24,5 +24,19 @@ namespace schemeapi.Models
         public string Status { get; set; }
 
         public string Message { get; set; }
+
+        public string schemetype { get; set; }
+
+        public string schemetitle { get; set; }
+
+        public string schemedesc { get; set; }
+
+        public string name { get; set; }
+
+        public string address { get; set; }
+
+        public int aadhaarno { get; set; }
+
+        public int phoneno { get; set; }
     }
 }
