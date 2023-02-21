@@ -182,7 +182,6 @@ namespace schemeapi.Controllers
         List<schememodel> memberlist = new List<schememodel>();
         [Route("Api/Schemes/GetMembers")]
         [HttpGet]
-
         public IEnumerable<schememodel> GetMembers()
         {
             schemeservice db = new schemeservice();
@@ -232,6 +231,47 @@ namespace schemeapi.Controllers
             if (result == 1)
             {
                 return new schememodel { Status = "Success", Message = "Member Deleted" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+
+        List<schememodel> allquerylist = new List<schememodel>();
+        [Route("Api/Schemes/GetAllQuery")]
+        [HttpGet]
+        public IEnumerable<schememodel> GetAllQuery()
+        {
+            schemeservice db = new schemeservice();
+            DataTable tab = new DataTable();
+            tab = db.GetAllQueries();
+            for (int i = 0; i < tab.Rows.Count; i++)
+            {
+                allquerylist.Add(new schememodel
+                {
+                    queryid = int.Parse(tab.Rows[i]["queryid"].ToString()),
+                    schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
+                    schemetitle = tab.Rows[i]["schemetitle"].ToString(),
+                    memberid = tab.Rows[i]["memberid"].ToString(),
+                    name = tab.Rows[i]["name"].ToString(),
+                    query = tab.Rows[i]["query"].ToString(),
+                    reply = tab.Rows[i]["reply"].ToString(),
+                });
+            }
+            return allquerylist;
+        }
+
+        [Route("Api/Schemes/GiveReply")]
+        [HttpPost()]
+        public schememodel GiveReply(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.Reply(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Success", Message = "Replied Successfully" };
             }
             else
             {

@@ -38,5 +38,11 @@ namespace schemeapi.Models
         public int aadhaarno { get; set; }
 
         public int phoneno { get; set; }
+
+        public int queryid { get; set; }
+
+        public string query { get; set; }
+
+        public string reply { get; set; }
     }
 }

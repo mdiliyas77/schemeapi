@@ -184,5 +184,29 @@ namespace schemeapi.Models
             con.Close();
             return res;
         }
+
+        public DataTable GetAllQueries()
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("select * from query q inner join govtschemes s on q.schemeid=s.schemeid inner join member m on q.memberid=m.memberid");
+            cmd.CommandText = sql;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            con.Close();
+            return tab;
+        }
+
+        public int Reply(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("update query set reply='{0}' where queryid={1} and memberid='{2}'", objModel.reply, objModel.queryid, objModel.memberid);
+            cmd.CommandText = sql;
+            int res = cmd.ExecuteNonQuery();
+            con.Close();
+            return res;
+        }
     }
 }
