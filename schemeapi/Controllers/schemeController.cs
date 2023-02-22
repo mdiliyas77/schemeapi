@@ -136,9 +136,11 @@ namespace schemeapi.Controllers
                 allschemelist.Add(new schememodel
                 {
                     schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
-                    schemetype = tab.Rows[i]["schemetype"].ToString(),
+                    usertypeid = int.Parse(tab.Rows[i]["usertypeid"].ToString()),
                     schemetitle = tab.Rows[i]["schemetitle"].ToString(),
                     schemedesc = tab.Rows[i]["schemedesc"].ToString(),
+                    docs = tab.Rows[i]["docs"].ToString(),
+                    usertype = tab.Rows[i]["usertype"].ToString()
 
                 });
             }
@@ -272,6 +274,26 @@ namespace schemeapi.Controllers
             if (result == 1)
             {
                 return new schememodel { Status = "Success", Message = "Replied Successfully" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+        [Route("Api/Schemes/MemberRegister")]
+        [HttpPost()]
+        public schememodel MemberRegister(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            string result = db.Register(objModel);
+            if (result.Split(',')[0] == "1")
+            {
+                return new schememodel { Status = "Success", Message = "Member Id :" + result.Split(',')[1] + ", Password : "+ result.Split(',')[1] };
+            }
+            else if (result.Split(',')[0] == "2")
+            {
+                return new schememodel { Status = "Success", Message = "Member Already Registered" };
             }
             else
             {

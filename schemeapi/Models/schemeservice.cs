@@ -119,7 +119,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("select * from govtschemes");
+            string sql = string.Format("select * from govtschemes s inner join usertypes u on s.usertypeid=u.usertypeid");
             cmd.CommandText = sql;
             adp = new MySqlDataAdapter(cmd);
             DataTable tab = new DataTable();
@@ -207,6 +207,31 @@ namespace schemeapi.Models
             int res = cmd.ExecuteNonQuery();
             con.Close();
             return res;
+        }
+
+        public string Register(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            int res;
+            Random rnd = new Random();
+            int rnduserid = rnd.Next(1000, 9999);
+            int rndpass = rnd.Next(1000, 9999);
+            string sqlcnt = string.Format("select count(*) from member where aadhaarno={0}", objModel.aadhaarno);
+            cmd.CommandText = sqlcnt;
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            if (count==0)
+            {
+                string sql = string.Format("insert into member (memberid,password,name,usertypeid,address,aadhaarno,phoneno) value ('{0}','{1}','{2}',{3},'{4}',{5},{6})", rnduserid, rndpass, objModel.name, objModel.usertypeid, objModel.address, objModel.aadhaarno, objModel.phoneno);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                res = 2;
+            }
+            con.Close();
+            return res + "," + rnduserid + "," + rndpass;
         }
     }
 }

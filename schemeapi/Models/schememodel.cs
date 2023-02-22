@@ -44,5 +44,7 @@ namespace schemeapi.Models
         public string query { get; set; }
 
         public string reply { get; set; }
+
+        public string docs { get; set; }
     }
 }
