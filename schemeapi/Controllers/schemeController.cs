@@ -136,11 +136,13 @@ namespace schemeapi.Controllers
                 allschemelist.Add(new schememodel
                 {
                     schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
-                    usertypeid = int.Parse(tab.Rows[i]["usertypeid"].ToString()),
+                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    caste = tab.Rows[i]["caste"].ToString(),
+                    maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
+                    usertype = tab.Rows[i]["usertype"].ToString(),
                     schemetitle = tab.Rows[i]["schemetitle"].ToString(),
                     schemedesc = tab.Rows[i]["schemedesc"].ToString(),
                     docs = tab.Rows[i]["docs"].ToString(),
-                    usertype = tab.Rows[i]["usertype"].ToString()
 
                 });
             }
@@ -196,10 +198,11 @@ namespace schemeapi.Controllers
                     memberid = tab.Rows[i]["memberid"].ToString(),
                     password = tab.Rows[i]["password"].ToString(),
                     name = tab.Rows[i]["name"].ToString(),
+                    caste = tab.Rows[i]["caste"].ToString(),
                     usertype = tab.Rows[i]["usertype"].ToString(),
-                    usertypeid = int.Parse(tab.Rows[i]["usertypeid"].ToString()),
                     address = tab.Rows[i]["address"].ToString(),
                     aadhaarno = int.Parse(tab.Rows[i]["aadhaarno"].ToString()),
+                    age = int.Parse(tab.Rows[i]["age"].ToString()),
                     phoneno = int.Parse(tab.Rows[i]["phoneno"].ToString()),
                 });
             }
@@ -299,6 +302,135 @@ namespace schemeapi.Controllers
             {
                 return new schememodel { Status = "Error", Message = "Error" };
             }
+        }
+
+        [Route("Api/Schemes/AddCastes")]
+        [HttpPost]
+
+        public schememodel AddCastes(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.AddCaste(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Success", Message = "Caste Added Successfully" };
+            }
+            else if (result == 2)
+            {
+                return new schememodel { Status = "Error", Message = "Caste Already Added" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+        List<schememodel> castelist = new List<schememodel>();
+        [Route("Api/Schemes/GetCastes")]
+        [HttpGet]
+
+        public IEnumerable<schememodel> GetCastes()
+        {
+            schemeservice db = new schemeservice();
+            DataTable tab = new DataTable();
+            tab = db.GetCaste();
+            for (int i = 0; i < tab.Rows.Count; i++)
+            {
+                castelist.Add(new schememodel
+                {
+                    casteid = int.Parse(tab.Rows[i]["casteid"].ToString()),
+                    caste = tab.Rows[i]["caste"].ToString(),
+
+                });
+            }
+            return castelist;
+        }
+
+        [Route("Api/Schemes/EditCastes")]
+        [HttpPost()]
+
+        public schememodel EditCastes(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.EditCaste(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Success", Message = "Caste Updated" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+        [Route("Api/Schemes/DeleteCastes")]
+        [HttpPost()]
+
+        public schememodel DeleteCastes(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.DeleteCaste(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Success", Message = "Caste Deleted" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+        List<schememodel> myschemelist = new List<schememodel>();
+        [Route("Api/Schemes/GetMySchemes")]
+        [HttpPost]
+
+        public IEnumerable<schememodel> GetMySchemes(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            DataTable tab = new DataTable();
+            tab = db.GetMyScheme(objModel);
+            for (int i = 0; i < tab.Rows.Count; i++)
+            {
+                myschemelist.Add(new schememodel
+                {
+                    schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
+                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    caste = tab.Rows[i]["caste"].ToString(),
+                    maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
+                    usertype = tab.Rows[i]["usertype"].ToString(),
+                    schemetitle = tab.Rows[i]["schemetitle"].ToString(),
+                    schemedesc = tab.Rows[i]["schemedesc"].ToString(),
+                    docs = tab.Rows[i]["docs"].ToString(),
+
+                });
+            }
+            return myschemelist;
+        }
+
+        List<schememodel> mlist = new List<schememodel>();
+        [Route("Api/Schemes/GetMemberById")]
+        [HttpPost]
+        public IEnumerable<schememodel> GetMemberById(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            DataTable tab = new DataTable();
+            tab = db.GetMembers(objModel);
+            for (int i = 0; i < tab.Rows.Count; i++)
+            {
+                mlist.Add(new schememodel
+                {
+                    memberid = tab.Rows[i]["memberid"].ToString(),
+                    password = tab.Rows[i]["password"].ToString(),
+                    name = tab.Rows[i]["name"].ToString(),
+                    caste = tab.Rows[i]["caste"].ToString(),
+                    usertype = tab.Rows[i]["usertype"].ToString(),
+                    address = tab.Rows[i]["address"].ToString(),
+                    aadhaarno = int.Parse(tab.Rows[i]["aadhaarno"].ToString()),
+                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    phoneno = int.Parse(tab.Rows[i]["phoneno"].ToString()),
+                });
+            }
+            return mlist;
         }
     }
 }

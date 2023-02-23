@@ -46,5 +46,14 @@ namespace schemeapi.Models
         public string reply { get; set; }
 
         public string docs { get; set; }
+
+        public int casteid { get; set; }
+
+        public string caste { get; set; }
+
+        public int age { get; set; }
+
+        public string maritialstatus { get; set; }
+
     }
 }

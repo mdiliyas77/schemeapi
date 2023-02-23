@@ -106,7 +106,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("insert into govtschemes (schemetype,schemetitle,schemedesc) value ('{0}','{1}','{2}')", objModel.schemetype,objModel.schemetitle,objModel.schemedesc);
+            string sql = string.Format("insert into govtschemes (usertype,schemetitle,schemedesc,age,caste,maritialstatus,docs) value ('{0}','{1}','{2}',{3},'{4}','{5}','{6}')", objModel.usertype, objModel.schemetitle,objModel.schemedesc,objModel.age,objModel.caste,objModel.maritialstatus,objModel.docs);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -119,7 +119,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("select * from govtschemes s inner join usertypes u on s.usertypeid=u.usertypeid");
+            string sql = string.Format("select * from govtschemes");
             cmd.CommandText = sql;
             adp = new MySqlDataAdapter(cmd);
             DataTable tab = new DataTable();
@@ -132,7 +132,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("update govtschemes set schemetype='{0}',schemetitle='{1}', schemedesc='{2}' where schemeid={3}", objModel.schemetype, objModel.schemetitle, objModel.schemedesc,objModel.schemeid);
+            string sql = string.Format("update govtschemes set usertype='{0}',schemetitle='{1}', schemedesc='{2}', age={3}, caste='{4}', maritialstatus='{5}', docs='{6}' where schemeid={7}", objModel.usertype, objModel.schemetitle, objModel.schemedesc,objModel.age, objModel.caste, objModel.maritialstatus, objModel.docs, objModel.schemeid);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -154,7 +154,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("select * from member m inner join usertypes u on m.usertypeid=u.usertypeid");
+            string sql = string.Format("select * from member");
             cmd.CommandText = sql;
             adp = new MySqlDataAdapter(cmd);
             DataTable tab = new DataTable();
@@ -232,6 +232,99 @@ namespace schemeapi.Models
             }
             con.Close();
             return res + "," + rnduserid + "," + rndpass;
+        }
+
+
+        public int AddCaste(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            int res;
+            string sql;
+            string sqlcnt = string.Format("select count(*) from caste where caste='{0}'", objModel.caste.ToLower());
+            cmd.CommandText = sqlcnt;
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            if (count == 0)
+            {
+                sql = string.Format("insert into caste (caste) value ('{0}')", objModel.caste.ToLower());
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                res = 2;
+            }
+
+            con.Close();
+            return res;
+
+        }
+
+        public DataTable GetMembers(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("select * from member where memberid='{0}'",objModel.memberid);
+            cmd.CommandText = sql;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            con.Close();
+            return tab;
+        }
+
+        public DataTable GetCaste()
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("select * from caste");
+            cmd.CommandText = sql;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            con.Close();
+            return tab;
+        }
+
+        public int EditCaste(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("update caste set caste='{0}' where casteid={1}", objModel.caste.ToLower(), objModel.casteid);
+            cmd.CommandText = sql;
+            int res = cmd.ExecuteNonQuery();
+            con.Close();
+            return res;
+        }
+
+        public int DeleteCaste(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("delete from caste where casteid={0}",objModel.casteid);
+            cmd.CommandText = sql;
+            int res = cmd.ExecuteNonQuery();
+            con.Close();
+            return res;
+        }
+
+        public DataTable GetMyScheme(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sqlmem = string.Format("select * from member where memberid='{0}'", objModel.memberid);
+            cmd.CommandText = sqlmem;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable memtab = new DataTable();
+            adp.Fill(memtab);
+
+            string sql = string.Format("select * from govtschemes where age>={0} and caste='{1}' and maritialstatus='{2}' and usertype='{3}'", memtab.Rows[0]["age"], memtab.Rows[0]["caste"], memtab.Rows[0]["maritialstatus"], memtab.Rows[0]["usertype"]);
+            cmd.CommandText = sql;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            con.Close();
+            return tab;
         }
     }
 }
