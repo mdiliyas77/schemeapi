@@ -35,9 +35,9 @@ namespace schemeapi.Models
 
         public string address { get; set; }
 
-        public int aadhaarno { get; set; }
+        public long aadhaarno { get; set; }
 
-        public int phoneno { get; set; }
+        public long phoneno { get; set; }
 
         public int queryid { get; set; }
 
@@ -54,6 +54,10 @@ namespace schemeapi.Models
         public int age { get; set; }
 
         public string maritialstatus { get; set; }
+
+        public string appstatus { get; set; }
+
+        public string condition { get; set; }
 
     }
 }

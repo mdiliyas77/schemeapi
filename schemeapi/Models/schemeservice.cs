@@ -167,7 +167,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("update member set name='{0}',usertypeid={1}, address='{2}',aadhaarno={3}, phoneno={4} where memberid='{5}'", objModel.name, objModel.usertypeid, objModel.address, objModel.aadhaarno,objModel.phoneno,objModel.memberid);
+            string sql = string.Format("update member set name='{0}',usertype='{1}', address='{2}',aadhaarno={3}, phoneno={4}, age={5}, caste='{6}', maritialstatus='{7}' where memberid='{8}'", objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno,objModel.phoneno,objModel.age, objModel.caste, objModel.maritialstatus, objModel.memberid);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -222,7 +222,7 @@ namespace schemeapi.Models
             int count = int.Parse(cmd.ExecuteScalar().ToString());
             if (count==0)
             {
-                string sql = string.Format("insert into member (memberid,password,name,usertypeid,address,aadhaarno,phoneno) value ('{0}','{1}','{2}',{3},'{4}',{5},{6})", rnduserid, rndpass, objModel.name, objModel.usertypeid, objModel.address, objModel.aadhaarno, objModel.phoneno);
+                string sql = string.Format("insert into member (memberid,password,name,usertype,address,aadhaarno,phoneno,age,caste,maritialstatus) value ('{0}','{1}','{2}','{3}','{4}',{5},{6},{7},'{8}','{9}')", rnduserid, rndpass, objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno, objModel.phoneno, objModel.age, objModel.caste, objModel.maritialstatus);
                 cmd.CommandText = sql;
                 res = cmd.ExecuteNonQuery();
             }
@@ -325,6 +325,124 @@ namespace schemeapi.Models
             adp.Fill(tab);
             con.Close();
             return tab;
+        }
+
+        public string Application(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            int res;
+            Random rnd = new Random();
+            int rndid = rnd.Next(1000, 9999);
+
+            L1:
+
+            string sqlcheck = string.Format("select count(*) from applications where applicationid={0}", rndid);
+            cmd.CommandText = sqlcheck;
+            int checkcount = int.Parse(cmd.ExecuteScalar().ToString());
+            if (checkcount > 0)
+
+            {
+                rndid = rnd.Next(1000, 9999);
+                goto L1;
+            }
+
+            string sqlcnt = string.Format("select count(*) from applications where schemeid={0} and memberid='{1}'", objModel.schemeid,objModel.memberid);
+            cmd.CommandText = sqlcnt;
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            if (count == 0)
+            {
+                string sql = string.Format("insert into applications(applicationid,schemeid,memberid) value ({0},{1},'{2}')", rndid, objModel.schemeid, objModel.memberid);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                res = 2;
+            }
+            con.Close();
+            return res + "," + rndid;
+        }
+
+        public string AddQuery(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            int res;
+            Random rnd = new Random();
+            int rndid = rnd.Next(1000, 9999);
+
+            L1:
+
+            string sqlcheck = string.Format("select count(*) from query where queryid={0}", rndid);
+            cmd.CommandText = sqlcheck;
+            int checkcount = int.Parse(cmd.ExecuteScalar().ToString());
+            if(checkcount>0)
+
+            {
+                rndid = rnd.Next(1000, 9999);
+                goto L1;
+            }
+
+            string sqlcnt = string.Format("select count(*) from query where schemeid={0} and memberid='{1}'", objModel.schemeid, objModel.memberid);
+            cmd.CommandText = sqlcnt;
+            int count = int.Parse(cmd.ExecuteScalar().ToString());
+            if (count == 0)
+            {
+                string sql = string.Format("insert into query(queryid,schemeid,memberid) value ({0},{1},'{2}')", rndid, objModel.schemeid, objModel.memberid);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery();
+            }
+            else
+            {
+                res = 2;
+            }
+            con.Close();
+            return res + "," + rndid;
+        }
+
+        public DataTable GetApps()
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("select * from applications a inner join member m on a.memberid=m.memberid inner join govtschemes s on a.schemeid=s.schemeid");
+            cmd.CommandText = sql;
+            adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            con.Close();
+            return tab;
+        }
+
+        public int ActionApp(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql;
+            int res;
+
+            if (objModel.condition=="approve")
+            {
+                sql = string.Format("update applications set status='approved' where applicationid={0} and memberid={1}", objModel.applicationid, objModel.memberid);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery();
+            }
+
+            else if (objModel.condition == "delete")
+            {
+                sql = string.Format("delete from applications where applicationid={0} and memberid={1}", objModel.applicationid, objModel.memberid);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery()+2;
+            }
+            else
+            {
+                sql = string.Format("update applications set status='rejected' where applicationid={0} and memberid={1}", objModel.applicationid, objModel.memberid);
+                cmd.CommandText = sql;
+                res = cmd.ExecuteNonQuery()+1;
+            }
+
+            con.Close();
+            return res;
         }
     }
 }

@@ -199,11 +199,12 @@ namespace schemeapi.Controllers
                     password = tab.Rows[i]["password"].ToString(),
                     name = tab.Rows[i]["name"].ToString(),
                     caste = tab.Rows[i]["caste"].ToString(),
+                    maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
                     usertype = tab.Rows[i]["usertype"].ToString(),
                     address = tab.Rows[i]["address"].ToString(),
-                    aadhaarno = int.Parse(tab.Rows[i]["aadhaarno"].ToString()),
+                    aadhaarno = long.Parse(tab.Rows[i]["aadhaarno"].ToString()),
                     age = int.Parse(tab.Rows[i]["age"].ToString()),
-                    phoneno = int.Parse(tab.Rows[i]["phoneno"].ToString()),
+                    phoneno = long.Parse(tab.Rows[i]["phoneno"].ToString()),
                 });
             }
             return memberlist;
@@ -423,14 +424,106 @@ namespace schemeapi.Controllers
                     password = tab.Rows[i]["password"].ToString(),
                     name = tab.Rows[i]["name"].ToString(),
                     caste = tab.Rows[i]["caste"].ToString(),
+                    maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
                     usertype = tab.Rows[i]["usertype"].ToString(),
                     address = tab.Rows[i]["address"].ToString(),
-                    aadhaarno = int.Parse(tab.Rows[i]["aadhaarno"].ToString()),
+                    aadhaarno = long.Parse(tab.Rows[i]["aadhaarno"].ToString()),
                     age = int.Parse(tab.Rows[i]["age"].ToString()),
-                    phoneno = int.Parse(tab.Rows[i]["phoneno"].ToString()),
+                    phoneno = long.Parse(tab.Rows[i]["phoneno"].ToString()),
                 });
             }
             return mlist;
+        }
+
+
+        [Route("Api/Schemes/Apply")]
+        [HttpPost()]
+        public schememodel Apply(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            string result = db.Application(objModel);
+            if (result.Split(',')[0] == "1")
+            {
+                return new schememodel { Status = "Success", Message = result.Split(',')[1]};
+            }
+            else if (result.Split(',')[0] == "2")
+            {
+                return new schememodel { Status = "Exist", Message = "Already Applied" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+
+        [Route("Api/Schemes/AddQuery")]
+        [HttpPost()]
+        public schememodel AddQuery(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            string result = db.AddQuery(objModel);
+            if (result.Split(',')[0] == "1")
+            {
+                return new schememodel { Status = "Success", Message = result.Split(',')[1] };
+            }
+            else if (result.Split(',')[0] == "2")
+            {
+                return new schememodel { Status = "Exist", Message = "Query Posted Already" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
+
+        List<schememodel> applist = new List<schememodel>();
+        [Route("Api/Schemes/GetAllApps")]
+        [HttpGet]
+        public IEnumerable<schememodel> GetAllApps()
+        {
+            schemeservice db = new schemeservice();
+            DataTable tab = new DataTable();
+            tab = db.GetApps();
+            for (int i = 0; i < tab.Rows.Count; i++)
+            {
+                applist.Add(new schememodel
+                {
+                    applicationid = int.Parse(tab.Rows[i]["applicationid"].ToString()),
+                    schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
+                    memberid = tab.Rows[i]["memberid"].ToString(),
+                    schemetitle = tab.Rows[i]["schemetitle"].ToString(),
+                    name = tab.Rows[i]["name"].ToString(),
+                    appstatus = tab.Rows[i]["status"].ToString(),
+                });
+            }
+            return applist;
+        }
+
+        [Route("Api/Schemes/ActionOnApp")]
+        [HttpPost()]
+
+        public schememodel ActionOnApp(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.ActionApp(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Approved", Message = "Application Approved" };
+            }
+            else if (result == 2)
+            {
+                return new schememodel { Status = "Rejected", Message = "Application Rejected" };
+            }
+            else if (result == 3)
+            {
+                return new schememodel { Status = "Deleted", Message = "Application Successfully Deleted!!" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
         }
     }
 }
