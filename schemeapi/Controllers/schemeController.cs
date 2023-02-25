@@ -285,6 +285,22 @@ namespace schemeapi.Controllers
             }
         }
 
+        [Route("Api/Schemes/DeleteQuery")]
+        [HttpPost()]
+        public schememodel DeleteQuery(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            int result = db.DeleteQueries(objModel);
+            if (result == 1)
+            {
+                return new schememodel { Status = "Success", Message = "Query Deleted Successfully" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+        }
+
         [Route("Api/Schemes/MemberRegister")]
         [HttpPost()]
         public schememodel MemberRegister(schememodel objModel)

@@ -352,7 +352,7 @@ namespace schemeapi.Models
             int count = int.Parse(cmd.ExecuteScalar().ToString());
             if (count == 0)
             {
-                string sql = string.Format("insert into applications(applicationid,schemeid,memberid) value ({0},{1},'{2}')", rndid, objModel.schemeid, objModel.memberid);
+                string sql = string.Format("insert into applications(applicationid,schemeid,memberid,status) value ({0},{1},'{2}','pending')", rndid, objModel.schemeid, objModel.memberid);
                 cmd.CommandText = sql;
                 res = cmd.ExecuteNonQuery();
             }
@@ -389,7 +389,7 @@ namespace schemeapi.Models
             int count = int.Parse(cmd.ExecuteScalar().ToString());
             if (count == 0)
             {
-                string sql = string.Format("insert into query(queryid,schemeid,memberid) value ({0},{1},'{2}')", rndid, objModel.schemeid, objModel.memberid);
+                string sql = string.Format("insert into query(queryid,schemeid,memberid,query) value ({0},{1},'{2}','{3}')", rndid, objModel.schemeid, objModel.memberid, objModel.query);
                 cmd.CommandText = sql;
                 res = cmd.ExecuteNonQuery();
             }
@@ -399,6 +399,17 @@ namespace schemeapi.Models
             }
             con.Close();
             return res + "," + rndid;
+        }
+
+        public int DeleteQueries(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string sql = string.Format("delete from query where queryid={0} and memberid='{1}'", objModel.queryid,objModel.memberid);
+            cmd.CommandText = sql;
+            int res = cmd.ExecuteNonQuery();
+            con.Close();
+            return res;
         }
 
         public DataTable GetApps()
