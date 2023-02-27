@@ -106,7 +106,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("insert into govtschemes (usertype,schemetitle,schemedesc,age,caste,maritialstatus,docs) value ('{0}','{1}','{2}',{3},'{4}','{5}','{6}')", objModel.usertype, objModel.schemetitle,objModel.schemedesc,objModel.age,objModel.caste,objModel.maritialstatus,objModel.docs);
+            string sql = string.Format("insert into govtschemes (usertype,schemetitle,schemedesc,age,caste,maritialstatus,docs,gender,status) value ('{0}','{1}','{2}',{3},'{4}','{5}','{6}','{7}','running')", objModel.usertype, objModel.schemetitle,objModel.schemedesc,objModel.age,objModel.caste,objModel.maritialstatus,objModel.docs, objModel.gender);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -132,7 +132,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("update govtschemes set usertype='{0}',schemetitle='{1}', schemedesc='{2}', age={3}, caste='{4}', maritialstatus='{5}', docs='{6}' where schemeid={7}", objModel.usertype, objModel.schemetitle, objModel.schemedesc,objModel.age, objModel.caste, objModel.maritialstatus, objModel.docs, objModel.schemeid);
+            string sql = string.Format("update govtschemes set usertype='{0}',schemetitle='{1}', schemedesc='{2}', age={3}, caste='{4}', maritialstatus='{5}', docs='{6}',gender='{7}', status='{8}' where schemeid={9}", objModel.usertype, objModel.schemetitle, objModel.schemedesc,objModel.age, objModel.caste, objModel.maritialstatus, objModel.docs, objModel.gender, objModel.status, objModel.schemeid);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -167,7 +167,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("update member set name='{0}',usertype='{1}', address='{2}',aadhaarno={3}, phoneno={4}, age={5}, caste='{6}', maritialstatus='{7}' where memberid='{8}'", objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno,objModel.phoneno,objModel.age, objModel.caste, objModel.maritialstatus, objModel.memberid);
+            string sql = string.Format("update member set name='{0}',usertype='{1}', address='{2}',aadhaarno={3}, phoneno={4}, age={5}, caste='{6}', maritialstatus='{7}', gender='{8}' where memberid='{9}'", objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno,objModel.phoneno,objModel.age, objModel.caste, objModel.maritialstatus, objModel.gender, objModel.memberid);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -222,7 +222,7 @@ namespace schemeapi.Models
             int count = int.Parse(cmd.ExecuteScalar().ToString());
             if (count==0)
             {
-                string sql = string.Format("insert into member (memberid,password,name,usertype,address,aadhaarno,phoneno,age,caste,maritialstatus) value ('{0}','{1}','{2}','{3}','{4}',{5},{6},{7},'{8}','{9}')", rnduserid, rndpass, objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno, objModel.phoneno, objModel.age, objModel.caste, objModel.maritialstatus);
+                string sql = string.Format("insert into member (memberid,password,name,usertype,address,aadhaarno,phoneno,age,caste,maritialstatus,gender) value ('{0}','{1}','{2}','{3}','{4}',{5},{6},{7},'{8}','{9}','{10}')", rnduserid, rndpass, objModel.name, objModel.usertype, objModel.address, objModel.aadhaarno, objModel.phoneno, objModel.age, objModel.caste, objModel.maritialstatus,objModel.gender);
                 cmd.CommandText = sql;
                 res = cmd.ExecuteNonQuery();
             }
@@ -318,7 +318,7 @@ namespace schemeapi.Models
             DataTable memtab = new DataTable();
             adp.Fill(memtab);
 
-            string sql = string.Format("select * from govtschemes where age>={0} and caste='{1}' and maritialstatus='{2}' and usertype='{3}'", memtab.Rows[0]["age"], memtab.Rows[0]["caste"], memtab.Rows[0]["maritialstatus"], memtab.Rows[0]["usertype"]);
+            string sql = string.Format("select * from govtschemes where age>={0} and caste='{1}' and maritialstatus='{2}' and usertype='{3}' and (gender='{4}' or gender='all')", memtab.Rows[0]["age"], memtab.Rows[0]["caste"], memtab.Rows[0]["maritialstatus"], memtab.Rows[0]["usertype"], memtab.Rows[0]["gender"]);
             cmd.CommandText = sql;
             adp = new MySqlDataAdapter(cmd);
             DataTable tab = new DataTable();

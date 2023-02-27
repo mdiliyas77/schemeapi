@@ -143,6 +143,8 @@ namespace schemeapi.Controllers
                     schemetitle = tab.Rows[i]["schemetitle"].ToString(),
                     schemedesc = tab.Rows[i]["schemedesc"].ToString(),
                     docs = tab.Rows[i]["docs"].ToString(),
+                    gender = tab.Rows[i]["gender"].ToString(),
+                    status = tab.Rows[i]["status"].ToString(),
 
                 });
             }
@@ -205,6 +207,7 @@ namespace schemeapi.Controllers
                     aadhaarno = long.Parse(tab.Rows[i]["aadhaarno"].ToString()),
                     age = int.Parse(tab.Rows[i]["age"].ToString()),
                     phoneno = long.Parse(tab.Rows[i]["phoneno"].ToString()),
+                    gender = tab.Rows[i]["gender"].ToString(),
                 });
             }
             return memberlist;
@@ -309,7 +312,7 @@ namespace schemeapi.Controllers
             string result = db.Register(objModel);
             if (result.Split(',')[0] == "1")
             {
-                return new schememodel { Status = "Success", Message = "Member Id :" + result.Split(',')[1] + ", Password : "+ result.Split(',')[1] };
+                return new schememodel { Status = "Success", Message = "Member Id :" + result.Split(',')[1] + ", Password : "+ result.Split(',')[2] };
             }
             else if (result.Split(',')[0] == "2")
             {
@@ -418,6 +421,8 @@ namespace schemeapi.Controllers
                     schemetitle = tab.Rows[i]["schemetitle"].ToString(),
                     schemedesc = tab.Rows[i]["schemedesc"].ToString(),
                     docs = tab.Rows[i]["docs"].ToString(),
+                    gender = tab.Rows[i]["gender"].ToString(),
+                    status = tab.Rows[i]["status"].ToString(),
 
                 });
             }
@@ -446,6 +451,7 @@ namespace schemeapi.Controllers
                     aadhaarno = long.Parse(tab.Rows[i]["aadhaarno"].ToString()),
                     age = int.Parse(tab.Rows[i]["age"].ToString()),
                     phoneno = long.Parse(tab.Rows[i]["phoneno"].ToString()),
+                    gender = tab.Rows[i]["gender"].ToString(),
                 });
             }
             return mlist;
@@ -512,6 +518,7 @@ namespace schemeapi.Controllers
                     schemetitle = tab.Rows[i]["schemetitle"].ToString(),
                     name = tab.Rows[i]["name"].ToString(),
                     appstatus = tab.Rows[i]["status"].ToString(),
+                    gender = tab.Rows[i]["gender"].ToString(),
                 });
             }
             return applist;

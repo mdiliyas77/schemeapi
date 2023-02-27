@@ -59,5 +59,9 @@ namespace schemeapi.Models
 
         public string condition { get; set; }
 
+        public string gender { get; set; }
+
+        public string status { get; set; }
+
     }
 }
