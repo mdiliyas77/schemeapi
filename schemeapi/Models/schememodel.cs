@@ -69,5 +69,9 @@ namespace schemeapi.Models
 
         public string base64String { get; set; }
 
+        public string filetype { get; set; }
+
+        public byte[] byteFile { get; set; }
+
     }
 }
