@@ -6,11 +6,23 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web;
+using System.IO;
+using MySql.Data.MySqlClient;
 
 namespace schemeapi.Controllers
 {
     public class schemeController : ApiController
     {
+
+        MySqlConnection con = null;
+        MySqlCommand cmd = null;
+
+        public schemeController()
+        {
+            con = new MySqlConnection("server=localhost;database=demo;user id=root;password=root;port=3306;");
+            con.Open();
+        }
 
         [Route("Api/Schemes/Login")]
         [HttpPost]
@@ -136,7 +148,8 @@ namespace schemeapi.Controllers
                 allschemelist.Add(new schememodel
                 {
                     schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
-                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    startage = tab.Rows[i]["startage"].ToString(),
+                    endage = tab.Rows[i]["endage"].ToString(),
                     caste = tab.Rows[i]["caste"].ToString(),
                     maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
                     usertype = tab.Rows[i]["usertype"].ToString(),
@@ -414,7 +427,8 @@ namespace schemeapi.Controllers
                 myschemelist.Add(new schememodel
                 {
                     schemeid = int.Parse(tab.Rows[i]["schemeid"].ToString()),
-                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    startage = tab.Rows[i]["startage"].ToString(),
+                    endage = tab.Rows[i]["endage"].ToString(),
                     caste = tab.Rows[i]["caste"].ToString(),
                     maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
                     usertype = tab.Rows[i]["usertype"].ToString(),
@@ -547,6 +561,72 @@ namespace schemeapi.Controllers
             {
                 return new schememodel { Status = "Error", Message = "Error" };
             }
+        }
+
+        [Route("Api/Schemes/Download")]
+        [HttpPost()]
+
+        public schememodel Download(schememodel objModel)
+        {
+            schemeservice db = new schemeservice();
+            string result = db.DownloadImg(objModel);
+            if (result.Split(',')[0] == "1")
+            {
+                return new schememodel { Status = "Success", base64String = result.Split(',')[1], name = result.Split(',')[2], Message = "File Downloaded" };
+            }
+            else if (result.Split(',')[0] == "2")
+            {
+                return new schememodel { Status = "Error", Message = "File Not Found" };
+            }
+            else
+            {
+                return new schememodel { Status = "Error", Message = "Error" };
+            }
+
+        }
+
+
+        [Route("Api/Schemes/UploadFiles")]
+        [HttpPost()]
+        public IHttpActionResult UploadFiles()
+        { 
+            System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            schememodel objModel = new schememodel();
+            //objModel.name = HttpContext.Current.Request.Form["name"];
+            objModel.applicationid = Convert.ToInt32(HttpContext.Current.Request.Form["applicationid"]);
+
+
+            // CHECK THE FILE COUNT.
+            for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
+            {
+                System.Web.HttpPostedFile hpf = hfc[iCnt];
+
+                if (hpf.ContentLength > 0)
+                {
+                    byte[] fileData;
+                    string Name;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        hpf.InputStream.CopyTo(ms);
+                        fileData = ms.ToArray();
+                        Name = hpf.FileName;
+                    }
+
+                    cmd = new MySqlCommand();
+                    cmd.Connection = con;
+                    string sql = string.Format("insert into demo(id,name,file)value(@id,@name,@data)");
+                    cmd.CommandText = sql;
+
+                    cmd.Parameters.Add("@data", MySqlDbType.Blob).Value = fileData;
+                    cmd.Parameters.AddWithValue("@name", Name);
+                    cmd.Parameters.AddWithValue("@id", objModel.applicationid);
+
+                    int res = cmd.ExecuteNonQuery();
+                    //}
+                }
+            }
+            con.Close();
+            return Ok("Upload successful.");
         }
     }
 }

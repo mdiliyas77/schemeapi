@@ -63,5 +63,11 @@ namespace schemeapi.Models
 
         public string status { get; set; }
 
+        public string startage { get; set; }
+
+        public string endage { get; set; }
+
+        public string base64String { get; set; }
+
     }
 }

@@ -106,7 +106,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("insert into govtschemes (usertype,schemetitle,schemedesc,age,caste,maritialstatus,docs,gender,status) value ('{0}','{1}','{2}',{3},'{4}','{5}','{6}','{7}','running')", objModel.usertype, objModel.schemetitle,objModel.schemedesc,objModel.age,objModel.caste,objModel.maritialstatus,objModel.docs, objModel.gender);
+            string sql = string.Format("insert into govtschemes (usertype,schemetitle,schemedesc,startage,caste,maritialstatus,docs,gender,status,endage) value ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','running','{8}')", objModel.usertype, objModel.schemetitle,objModel.schemedesc,objModel.startage,objModel.caste,objModel.maritialstatus,objModel.docs, objModel.gender, objModel.endage);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -132,7 +132,7 @@ namespace schemeapi.Models
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string sql = string.Format("update govtschemes set usertype='{0}',schemetitle='{1}', schemedesc='{2}', age={3}, caste='{4}', maritialstatus='{5}', docs='{6}',gender='{7}', status='{8}' where schemeid={9}", objModel.usertype, objModel.schemetitle, objModel.schemedesc,objModel.age, objModel.caste, objModel.maritialstatus, objModel.docs, objModel.gender, objModel.status, objModel.schemeid);
+            string sql = string.Format("update govtschemes set usertype='{0}',schemetitle='{1}', schemedesc='{2}', startage='{3}', caste='{4}', maritialstatus='{5}', docs='{6}',gender='{7}', status='{8}', endage='{9}' where schemeid={10}", objModel.usertype, objModel.schemetitle, objModel.schemedesc,objModel.startage, objModel.caste, objModel.maritialstatus, objModel.docs, objModel.gender, objModel.status, objModel.endage, objModel.schemeid);
             cmd.CommandText = sql;
             int res = cmd.ExecuteNonQuery();
             con.Close();
@@ -318,7 +318,7 @@ namespace schemeapi.Models
             DataTable memtab = new DataTable();
             adp.Fill(memtab);
 
-            string sql = string.Format("select * from govtschemes where age>={0} and caste='{1}' and maritialstatus='{2}' and usertype='{3}' and (gender='{4}' or gender='all')", memtab.Rows[0]["age"], memtab.Rows[0]["caste"], memtab.Rows[0]["maritialstatus"], memtab.Rows[0]["usertype"], memtab.Rows[0]["gender"]);
+            string sql = string.Format("select * from govtschemes where ((startage<='{0}' and endage>='{0}') or (startage='all' and endage='all')) and (caste='{1}' or caste='all') and (maritialstatus='{2}' or maritialstatus='all' ) and (usertype='{3}' or usertype='all') and (gender='{4}' or gender='all')", memtab.Rows[0]["age"], memtab.Rows[0]["caste"], memtab.Rows[0]["maritialstatus"], memtab.Rows[0]["usertype"], memtab.Rows[0]["gender"]);
             cmd.CommandText = sql;
             adp = new MySqlDataAdapter(cmd);
             DataTable tab = new DataTable();
@@ -454,6 +454,40 @@ namespace schemeapi.Models
 
             con.Close();
             return res;
+        }
+
+
+        public string DownloadImg(schememodel objModel)
+        {
+            cmd = new MySqlCommand();
+            cmd.Connection = con;
+            string name=null;
+            string base64=null;
+            int res=0;
+            string sql = string.Format("select image from applications where applicationid={0}", objModel.applicationid);
+            cmd.CommandText = sql;
+            byte[] byteFile = (byte[])cmd.ExecuteScalar();
+            if (byteFile!=null)
+            {
+
+            res = 1;
+            base64 = Convert.ToBase64String(byteFile);
+
+            sql = string.Format("select imagename from applications where applicationid={0}", objModel.applicationid);
+            cmd.CommandText = sql;
+            MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+            DataTable tab = new DataTable();
+            adp.Fill(tab);
+            name = tab.Rows[0]["name"].ToString();
+            con.Close();
+
+            }
+            else
+            {
+                res = 2;
+            }
+
+            return res + "," + base64 +","+ name;
         }
     }
 }
