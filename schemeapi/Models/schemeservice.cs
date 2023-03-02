@@ -457,59 +457,23 @@ namespace schemeapi.Models
         }
 
 
-        public string DownloadImg(schememodel objModel)
+        public string DownloadFile(schememodel objModel)
         {
             cmd = new MySqlCommand();
             cmd.Connection = con;
-            string name=null;
-            string base64=null;
-            int res=0;
-            string sql;
-            if (objModel.filetype == "image")
-            {
-                sql = string.Format("select image from applications where applicationid={0}", objModel.applicationid);
+            int res=1;
+                string sql = string.Format("select file from applications where applicationid={0}", objModel.applicationid);
                 cmd.CommandText = sql;
                 objModel.byteFile = (byte[])cmd.ExecuteScalar();
-            }
-            else
-            {
-                sql = string.Format("select aadhaar from applications where applicationid={0}", objModel.applicationid);
+                string base64 = Convert.ToBase64String(objModel.byteFile);
+            
+                sql = string.Format("select filename from applications where applicationid={0}", objModel.applicationid);
                 cmd.CommandText = sql;
-                objModel.byteFile = (byte[])cmd.ExecuteScalar();
-            }
-
-            if (objModel.byteFile != null)
-            {
-                res = 1;
-                base64 = Convert.ToBase64String(objModel.byteFile);
-            }
-            else
-            {
-                res = 2;
-            }
-
-            if (res == 1)
-            {
-                
-                if (objModel.filetype == "image")
-                {
-                    sql = string.Format("select imagename from applications where applicationid={0}", objModel.applicationid);
-                    cmd.CommandText = sql;
-                    MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
-                    DataTable tab = new DataTable();
-                    adp.Fill(tab);
-                    name = tab.Rows[0]["imagename"].ToString();
-                }
-                else
-                {
-                    sql = string.Format("select aadhaarname from applications where applicationid={0}", objModel.applicationid);
-                    cmd.CommandText = sql;
-                    MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
-                    DataTable tab = new DataTable();
-                    adp.Fill(tab);
-                    name = tab.Rows[0]["aadhaarname"].ToString();
-                }
-            }
+                MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+                DataTable tab = new DataTable();
+                adp.Fill(tab);
+                string name = tab.Rows[0]["filename"].ToString();
+            
 
             con.Close();
 

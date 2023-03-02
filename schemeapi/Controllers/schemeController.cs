@@ -20,7 +20,7 @@ namespace schemeapi.Controllers
 
         public schemeController()
         {
-            con = new MySqlConnection("server=localhost;database=demo;user id=root;password=root;port=3306;");
+            con = new MySqlConnection("server=localhost;database=schemes;user id=root;password=root;port=3306;");
             con.Open();
         }
 
@@ -569,7 +569,7 @@ namespace schemeapi.Controllers
         public schememodel Download(schememodel objModel)
         {
             schemeservice db = new schemeservice();
-            string result = db.DownloadImg(objModel);
+            string result = db.DownloadFile(objModel);
             if (result.Split(',')[0] == "1")
             {
                 return new schememodel { Status = "Success", base64String = result.Split(',')[1], name = result.Split(',')[2], Message = "File Downloaded" };
@@ -592,9 +592,9 @@ namespace schemeapi.Controllers
         { 
             System.Web.HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
             schememodel objModel = new schememodel();
-            //objModel.name = HttpContext.Current.Request.Form["name"];
+            objModel.filetype = HttpContext.Current.Request.Form["filetype"];
             objModel.applicationid = Convert.ToInt32(HttpContext.Current.Request.Form["applicationid"]);
-
+            int res = 0;
 
             // CHECK THE FILE COUNT.
             for (int iCnt = 0; iCnt <= hfc.Count - 1; iCnt++)
@@ -612,21 +612,26 @@ namespace schemeapi.Controllers
                         Name = hpf.FileName;
                     }
 
-                    cmd = new MySqlCommand();
-                    cmd.Connection = con;
-                    string sql = string.Format("insert into demo(id,name,file)value(@id,@name,@data)");
-                    cmd.CommandText = sql;
+                        cmd = new MySqlCommand();
+                        cmd.Connection = con;
+                        string sql = string.Format("update applications set filename = @name, file = @data where applicationid = @id");
+                        cmd.CommandText = sql;
 
-                    cmd.Parameters.Add("@data", MySqlDbType.Blob).Value = fileData;
-                    cmd.Parameters.AddWithValue("@name", Name);
-                    cmd.Parameters.AddWithValue("@id", objModel.applicationid);
-
-                    int res = cmd.ExecuteNonQuery();
-                    //}
+                        cmd.Parameters.Add("@data", MySqlDbType.Blob).Value = fileData;
+                        cmd.Parameters.AddWithValue("@name", Name);
+                        cmd.Parameters.AddWithValue("@id", objModel.applicationid);
+                        res = cmd.ExecuteNonQuery();
+                    
                 }
             }
             con.Close();
-            return Ok("Upload successful.");
+            if(res == 1)
+            {
+                return Ok("Upload successful.");
+            }
+            else
+                return Ok("Upload failed.");
+
         }
     }
 }
