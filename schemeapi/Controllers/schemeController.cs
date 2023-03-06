@@ -212,15 +212,16 @@ namespace schemeapi.Controllers
                 {
                     memberid = tab.Rows[i]["memberid"].ToString(),
                     password = tab.Rows[i]["password"].ToString(),
+                    usertype = tab.Rows[i]["usertype"].ToString(),
                     name = tab.Rows[i]["name"].ToString(),
+                    age = int.Parse(tab.Rows[i]["age"].ToString()),
+                    gender = tab.Rows[i]["gender"].ToString(),
                     caste = tab.Rows[i]["caste"].ToString(),
                     maritialstatus = tab.Rows[i]["maritialstatus"].ToString(),
-                    usertype = tab.Rows[i]["usertype"].ToString(),
                     address = tab.Rows[i]["address"].ToString(),
                     aadhaarno = long.Parse(tab.Rows[i]["aadhaarno"].ToString()),
-                    age = int.Parse(tab.Rows[i]["age"].ToString()),
                     phoneno = long.Parse(tab.Rows[i]["phoneno"].ToString()),
-                    gender = tab.Rows[i]["gender"].ToString(),
+                    
                 });
             }
             return memberlist;
